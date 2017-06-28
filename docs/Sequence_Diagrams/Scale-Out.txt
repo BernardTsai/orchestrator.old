@@ -1,0 +1,59 @@
+#-------------------------------------------------------------------------------
+#
+# Scale-Out algorithm for a VNF (cluster) component
+#
+# Author: Bernard Tsai (bernard@tsai.eu)
+# Date:   2017-05-21
+#
+# open with https://www.websequencediagrams.com/
+#
+#-------------------------------------------------------------------------------
+
+title Scale-Out
+
+participant DevOps
+participant AO
+participant VIM
+participant VNFM
+participant VNF
+
+DevOps->AO: request scale-out
+VNFM->AO:   request scale-out
+
+loop until required capacity is reached
+  AO->+VIM:           activate virtual host
+  VIM->+VNF:          create virtual host
+  VNF->-VIM:
+  VIM->+VNF:          start virtual host
+  VNF->-VIM:
+  VIM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  AO->+VNFM:           activate application
+  VNFM->+VNF:          create application
+  VNF->-VNFM:
+  VNFM->+VNF:          start application
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  AO->+VNFM:           scale-out cluster
+  VNFM->+VNF:          reconfigure cluster\n(add node to cluster)
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  loop over all clients
+    AO->+VNFM:           reconfigure client
+    VNFM->+VNF:          reconfigure client cluster\n(update service endpoints)
+    VNF->-VNFM:
+    VNFM->-AO:           notify
+  end
+
+end
+
+AO->DevOps: notify
+AO->VNFM:   notify

@@ -1,0 +1,93 @@
+#-------------------------------------------------------------------------------
+#
+# Migration algorithm for a VNF (cluster) component
+#
+# Author: Bernard Tsai (bernard@tsai.eu)
+# Date:   2017-05-21
+#
+# open with https://www.websequencediagrams.com/
+#
+#-------------------------------------------------------------------------------
+
+title Migrate
+
+participant DevOps
+participant AO
+participant VIM
+participant VNFM
+participant VNF
+
+DevOps->AO: request migration
+
+loop until all cluster nodes are migrated
+
+  note over AO,VNFM,VIM,VNF: add new node to cluster
+
+  AO->+VIM:           activate new virtual host
+  VIM->+VNF:          create virtual host
+  VNF->-VIM:
+  VIM->+VNF:          start virtual host
+  VNF->-VIM:
+  VIM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  AO->+VNFM:           activate application
+  VNFM->+VNF:          create application
+  VNF->-VNFM:
+  VNFM->+VNF:          start application
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  AO->+VNFM:           scale-out cluster
+  VNFM->+VNF:          reconfigure cluster\n(add node to cluster)
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  loop over all clients
+    AO->+VNFM:           reconfigure client
+    VNFM->+VNF:          reconfigure client cluster\n(update service endpoints)
+    VNF->-VNFM:
+    VNFM->-AO:           notify
+  end
+
+  note over AO,VNFM,VIM,VNF: remove old node from cluster
+
+  AO->+VNFM:           scale-in cluster
+  VNFM->+VNF:          reconfigure cluster\n(determine old node\nand remove it from cluster)
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  loop over all clients
+    AO->+VNFM:           reconfigure client
+    VNFM->+VNF:          reconfigure client cluster\n(update service endpoints)
+    VNF->-VNFM:
+    VNFM->-AO:           notify
+  end
+
+  AO->+VNFM:           destroy application
+  VNFM->+VNF:          stop application
+  VNF->-VNFM:
+  VNFM->+VNF:          destroy application\n(optional)
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  AO->+VIM:           remove old virtual host
+  VIM->+VNF:          stop virtual host
+  VNF->-VIM:
+  VIM->+VNF:          destroy virtual host
+  VNF->-VIM:
+  VIM->-AO:           notify
+
+  AO->DevOps:          notify
+end
+
+AO->DevOps: notify

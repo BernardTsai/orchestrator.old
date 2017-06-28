@@ -1,0 +1,69 @@
+#-------------------------------------------------------------------------------
+#
+# Deployment algorithm for a VNF
+#
+# Author: Bernard Tsai (bernard@tsai.eu)
+# Date:   2017-05-21
+#
+# open with https://www.websequencediagrams.com/
+#
+#-------------------------------------------------------------------------------
+
+title Deployment
+
+participant DevOps
+participant AO
+participant VNFM
+participant VIM
+participant VNF
+
+DevOps->AO: request\nupdate
+
+loop over all clusters in sequence of dependencies
+
+  AO->+VNFM:           activate cluster
+  VNFM->+VNF:          create cluster
+  VNF->-VNFM:
+  VNFM->+VNF:          start cluster
+  VNF->-VNFM:
+  VNFM->-AO:           notify
+
+  AO->DevOps:          notify
+
+  loop over all cluster nodes
+    AO->+VIM:           activate virtual host
+    VIM->+VNF:          create virtual host
+    VNF->-VIM:
+    VIM->+VNF:          start virtual host
+    VNF->-VIM:
+    VIM->-AO:           notify
+
+    AO->DevOps:          notify
+
+    AO->+VNFM:           activate application
+    VNFM->+VNF:          create application
+    VNF->-VNFM:
+    VNFM->+VNF:          start application
+    VNF->-VNFM:
+    VNFM->-AO:           notify
+
+    AO->DevOps:          notify
+
+    AO->+VNFM:           scale-out cluster
+    VNFM->+VNF:          reconfigure cluster\n(add node to cluster)
+    VNF->-VNFM:
+    VNFM->-AO:           notify
+
+    AO->DevOps:          notify
+
+    loop over all clients
+      AO->+VNFM:           reconfigure client
+      VNFM->+VNF:          reconfigure client cluster\n(update service endpoints)
+      VNF->-VNFM:
+      VNFM->-AO:           notify
+    end
+
+  end
+end
+
+AO->DevOps: notify
