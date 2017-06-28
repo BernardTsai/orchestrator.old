@@ -1,0 +1,10 @@
+---
+ref: orchestrator
+name: Simple Orchestrator
+description: A simple VNF orchestration pack.
+keywords:
+    - orchestration
+    - VNF
+version: 0.1.0
+author: Bernard Tsai
+email: bernard@tsai.eu
