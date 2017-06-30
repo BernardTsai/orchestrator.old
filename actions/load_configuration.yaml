@@ -1,0 +1,22 @@
+---
+name: "load_configuration"
+runner_type: "python-script"
+description: "Load a configuration for a VNF with a specific version."
+enabled: true
+entry_point: "load_configuration.py"
+parameters:
+    configuration_directory:
+        type: "string"
+        description: "Location of the configuration directory"
+        required: true
+        position: 0
+    VNF:
+        type: "string"
+        description: "Name of the virtualized network function"
+        required: true
+        position: 1
+    version:
+        type: "string"
+        description: "Version string"
+        required: true
+        position: 2
