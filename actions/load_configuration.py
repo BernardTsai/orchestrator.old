@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import sys
+from os   import path
+from yaml import safe_load
 
 from st2actions.runners.pythonrunner import Action
 
@@ -9,13 +10,17 @@ class LoadConfiguration(Action):
     def run(self, configuration_directory, vnf, version):
 
         try:
-            filename = "../etc/" + configuration_directory + "/" + vnf + "_" + version + "/config"
+            root_dir = path.dirname( path.realpath(__file__) )
+            filename = path.join( root_dir, "..", "etc", configuration_directory, vnf + "_" + version, "config" )
 
             with open( filename, 'r' ) as file:
 
                 data = file.read()
 
-            return ( True, data )
+                yaml = safe_load( data )
 
-        except Exception:
-            return  ( False, '' )
+            return ( True, yaml )
+
+        except Exception as exc:
+           print( exc )
+           return  ( False, '' )

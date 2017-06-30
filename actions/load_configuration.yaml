@@ -10,7 +10,7 @@ parameters:
         description: "Location of the configuration directory"
         required: true
         position: 0
-    VNF:
+    vnf:
         type: "string"
         description: "Name of the virtualized network function"
         required: true
