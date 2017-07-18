@@ -3,4 +3,4 @@
     description: "Path to the configuration directory"
     type: "string"
     required: true
-    default: "cfg"
+    default: "config"
