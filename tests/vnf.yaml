@@ -1,0 +1,5 @@
+uuid2: "123"
+name: Test vnf
+description: Test vnf
+vendor: ACME Inc.
+state: active

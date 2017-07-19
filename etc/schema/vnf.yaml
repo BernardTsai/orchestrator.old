@@ -1,0 +1,24 @@
+type: "object"
+required:
+  - uuid
+  - name
+properties:
+  uuid:
+    type: "string"
+    description: "Unique universal identifier"
+  name:
+    type: "string"
+    description: "Unique name for the virtualized network function"
+  description:
+    type: "string"
+    description: "Description for the virtualized network function"
+  vendor:
+    type: "string"
+    description: "Vendor of the virtualized network function"
+  state:
+    type: "string"
+    description: "Desired state of the virtualized network function"
+    enum:
+    - "initial"
+    - "created"
+    - "active"

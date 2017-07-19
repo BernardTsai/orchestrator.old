@@ -1,0 +1,17 @@
+---
+name: "validate_schema"
+runner_type: "python-script"
+description: "Validate schema."
+enabled: true
+entry_point: "validate_schema.py"
+parameters:
+    schema_name:
+        type: "string"
+        description: "Name of the schema"
+        required: true
+        position: 0
+    data:
+        type: "object"
+        description: "Data to be validated"
+        required: true
+        position: 1
